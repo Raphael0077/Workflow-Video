@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workflow Video — Prompt Builder</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#0d1117;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+body{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:20px}
+
+.app{
+  background:#111827;
+  color:#dde6f5;
+  font-family:inherit;
+  width:100%;
+  max-width:1100px;
+  min-height:calc(100vh - 40px);
+  border-radius:12px;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  border:1px solid #1e2d45;
+}
+
+button,label.btn{
+  -webkit-appearance:none;
+  appearance:none;
+  font-family:inherit;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  white-space:nowrap;
+  line-height:1;
+  text-decoration:none;
+  transition:all .15s;
+  border:none;
+  outline:none;
+}
+button i,label.btn i{font-size:13px;flex-shrink:0}
+
+.bg{background:#0d1a2d!important;border:1.5px solid #4a7aaa!important;color:#c0d8f0!important;border-radius:7px!important;height:30px!important;padding:0 11px!important;font-size:12px!important}
+.bg:hover{background:rgba(74,122,170,.2)!important;border-color:#7aacda!important;color:#e0f0ff!important}
+
+.bo{background:rgba(37,99,235,.15)!important;border:1.5px solid #60a5fa!important;color:#93c5fd!important;border-radius:7px!important;height:30px!important;padding:0 12px!important;font-size:12px!important;font-weight:500!important}
+.bo:hover{background:rgba(37,99,235,.28)!important;border-color:#bfdbfe!important;color:#dbeafe!important}
+
+.bs{background:#1d4ed8!important;border:1.5px solid #60a5fa!important;color:#fff!important;border-radius:8px!important;height:38px!important;padding:0 20px!important;font-size:13px!important;font-weight:600!important}
+.bs:hover{background:#2563eb!important;border-color:#93c5fd!important}
+
+.bsu{background:transparent!important;border:1.5px solid #2d4060!important;color:#6a9abf!important;border-radius:8px!important;height:38px!important;padding:0 14px!important;font-size:12px!important}
+.bsu:hover{border-color:#4a7aaa!important;color:#a0c8e8!important}
+
+.bact-p{flex:1;background:#1d4ed8!important;border:1.5px solid #60a5fa!important;color:#fff!important;border-radius:6px!important;height:30px!important;padding:0 8px!important;font-size:12px!important;font-weight:500!important;justify-content:center}
+.bact-p:hover{background:#2563eb!important}
+.bact-s{flex:1;background:transparent!important;border:1.5px solid #4a7aaa!important;color:#c0d8f0!important;border-radius:6px!important;height:30px!important;padding:0 8px!important;font-size:12px!important;justify-content:center}
+.bact-s:hover{background:rgba(74,122,170,.15)!important;border-color:#7aacda!important}
+.bjson{flex:1;background:transparent!important;border:1.5px solid #2d4060!important;color:#6a9abf!important;border-radius:6px!important;height:28px!important;padding:0 6px!important;font-size:11px!important;justify-content:center}
+.bjson:hover{border-color:#4a7aaa!important;color:#a0c8e8!important}
+
+.topbar{background:#151f30;border-bottom:1px solid #1e2d45;padding:0 16px;height:50px;display:flex;align-items:center;gap:7px;flex-shrink:0}
+.logo{font-size:15px;font-weight:600;color:#dde6f5;display:flex;align-items:center;gap:8px;padding-right:16px;border-right:1px solid #1e2d45;margin-right:4px;height:100%;flex-shrink:0}
+.logo i{color:#3b82f6;font-size:18px}
+.proj-wrap{position:relative;display:flex;align-items:center}
+.proj-icon{position:absolute;left:9px;color:#60a5fa;font-size:12px;pointer-events:none;z-index:1}
+.proj-arrow{position:absolute;right:8px;color:#60a5fa;font-size:11px;pointer-events:none;z-index:1}
+.proj-sel{background-color:#16305a!important;border:1.5px solid #60a5fa!important;color:#93c5fd!important;font-size:12px;padding:0 26px 0 27px;border-radius:7px;cursor:pointer;outline:none;-webkit-appearance:none!important;appearance:none!important;font-family:inherit;height:30px;max-width:180px;font-weight:500}
+.proj-sel option{background:#151f30;color:#dde6f5}
+.spacer{flex:1}
+
+.tabs{background:#151f30;border-bottom:1px solid #1e2d45;padding:0 16px;display:flex;flex-shrink:0}
+.tab{padding:0 18px;height:42px;font-size:13px;color:#4a6a8a;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;display:flex;align-items:center;gap:7px;white-space:nowrap;user-select:none}
+.tab i{font-size:14px}
+.tab:hover{color:#90b4e0}
+.tab.active{color:#60a5fa;border-bottom-color:#3b82f6}
+.tab.active i{color:#3b82f6}
+
+.body{display:flex;flex:1;overflow:hidden;min-height:500px}
+.left{flex:1;min-width:0;padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:9px;background:#111827}
+.right{width:270px;flex-shrink:0;border-left:1px solid #1e2d45;padding:13px 15px;display:flex;flex-direction:column;gap:10px;background:#151f30}
+
+.section{background:#1a2840;border:1px solid #1e2d45;border-radius:8px;overflow:hidden}
+.sec-head{padding:10px 13px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;transition:background .15s}
+.sec-head:hover{background:#1f3050}
+.sec-title{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:#c8daf0}
+.sec-title i{font-size:14px;color:#3b82f6}
+.arrow{font-size:13px;color:#2a4060;transition:transform .2s}
+.arrow.open{transform:rotate(180deg)}
+.sec-body{padding:0 13px 12px;display:none}
+.sec-body.open{display:block}
+.field-row{margin-top:11px}
+.field-label{font-size:10px;font-weight:700;color:#ffffff;margin-bottom:6px;text-transform:uppercase;letter-spacing:.07em}
+
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px}
+.chip{padding:4px 11px;border-radius:20px;border:1.5px solid #1e2d45;background:#111827;color:#4a6a8a;font-size:12px;cursor:pointer;transition:all .12s;white-space:nowrap;user-select:none}
+.chip:hover{border-color:#60a5fa;color:#c0d8f0}
+.chip.sel{background:#0f2a4a;color:#7dbfff;border-color:#3b82f6;font-weight:500}
+
+.finput{width:100%;background:#111827;border:1.5px solid #1e2d45;color:#c8daf0;font-size:12px;padding:0 10px;border-radius:6px;font-family:inherit;transition:border .15s;height:30px;outline:none}
+.finput:focus{border-color:#60a5fa}
+.finput::placeholder{color:#2a4060}
+
+.plabel{font-size:10px;font-weight:700;color:#ffffff;text-transform:uppercase;letter-spacing:.07em}
+.pcard{background:#1a2840;border:1.5px solid #1e2d45;border-radius:8px;padding:12px;min-height:100px;flex-shrink:0}
+.vtag{font-size:9px;color:#3b82f6;margin-bottom:8px;letter-spacing:.05em;font-weight:700;text-transform:uppercase}
+.ptext{font-size:12px;color:#c8daf0;line-height:1.75;font-family:'Courier New',monospace;word-break:break-word}
+.pempty{color:#2a4060;font-style:italic}
+.divider{border:none;border-top:1px solid #1e2d45}
+.slist{display:flex;flex-direction:column;gap:4px;max-height:130px;overflow-y:auto}
+.sitem{background:#1a2840;border:1px solid #1e2d45;border-radius:6px;padding:7px 9px;display:flex;align-items:flex-start;gap:6px}
+.smeta{font-size:10px;color:#2a4060;margin-bottom:2px}
+.stxt{font-size:11px;color:#6a8aaa;line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.scopy{cursor:pointer;color:#2a4060;font-size:13px;flex-shrink:0;padding:2px;transition:color .12s}
+.scopy:hover{color:#60a5fa}
+.actrow{display:flex;gap:6px}
+.jrow{display:flex;gap:6px}
+
+.btmbar{padding:10px 16px;background:#151f30;border-top:1px solid #1e2d45;display:flex;gap:8px;align-items:center;flex-wrap:wrap;flex-shrink:0}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="topbar">
+    <div class="logo"><i class="ti ti-player-record"></i>Workflow Video</div>
+    <div class="proj-wrap">
+      <i class="ti ti-folder proj-icon"></i>
+      <select class="proj-sel" id="projSelect" onchange="switchProj(this.value)"></select>
+      <i class="ti ti-chevron-down proj-arrow"></i>
+    </div>
+    <button class="bg" onclick="newProject()"><i class="ti ti-plus"></i>Neu</button>
+    <button class="bg" onclick="delProject()"><i class="ti ti-trash"></i>Löschen</button>
+    <div class="spacer"></div>
+    <button class="bo" onclick="exportJSON()"><i class="ti ti-download"></i>JSON</button>
+    <label class="btn bo" style="cursor:pointer"><i class="ti ti-upload"></i>Import<input type="file" accept=".json" style="display:none" onchange="importJSON(event)"></label>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" id="tab-idea" onclick="switchTab('idea')"><i class="ti ti-bulb"></i>1. Idee &amp; Konzept</div>
+    <div class="tab" id="tab-image" onclick="switchTab('image')"><i class="ti ti-photo"></i>2. Bildprompt</div>
+    <div class="tab" id="tab-video" onclick="switchTab('video')"><i class="ti ti-video"></i>3. Videoprompt</div>
+  </div>
+
+  <div class="body">
+    <div class="left" id="leftPanel"></div>
+    <div class="right">
+      <div class="plabel">Live-Vorschau</div>
+      <div class="pcard">
+        <div class="vtag" id="variantLabel">Idee — Prompt</div>
+        <div class="ptext" id="previewText"><span class="pempty">Wähle Bausteine oder schreibe eigene Eingaben...</span></div>
+      </div>
+      <div class="actrow">
+        <button class="bact-p" onclick="copyPreview()"><i class="ti ti-copy"></i>Kopieren</button>
+        <button class="bact-s" onclick="savePromptLib()"><i class="ti ti-bookmark"></i>Speichern</button>
+      </div>
+      <div class="divider"></div>
+      <div class="plabel">Gespeicherte Prompts</div>
+      <div class="slist" id="savedList"></div>
+      <div class="divider" style="margin-top:auto"></div>
+      <div class="jrow">
+        <button class="bjson" onclick="exportJSON()"><i class="ti ti-download"></i>Export</button>
+        <label class="btn bjson" style="cursor:pointer"><i class="ti ti-upload"></i>Import<input type="file" accept=".json" style="display:none" onchange="importJSON(event)"></label>
+      </div>
+    </div>
+  </div>
+
+  <div class="btmbar">
+    <button class="bs" onclick="generatePrompt()"><i class="ti ti-sparkles"></i>Prompt generieren</button>
+    <button class="bsu" onclick="randomize()"><i class="ti ti-dice"></i>Überrasch mich</button>
+    <button class="bsu" style="margin-left:auto" onclick="resetCurrent()"><i class="ti ti-refresh"></i>Zurücksetzen</button>
+  </div>
+</div>
+
+<script>
+const PHASES={
+  idea:{label:'Idee — Prompt',sections:[
+    {id:'g1',title:'Genre & Format',icon:'ti-movie',fields:[
+      {key:'genre',label:'Genre',chips:['Thriller','Drama','Comedy','Action','Sci-Fi','Horror','Romance','Doku','Musikvideo','Werbespot']},
+      {key:'target',label:'Zielgruppe / Plattform',chips:['YouTube','Instagram Reels','TikTok','Kino','Werbung','Kurzfilm']},
+      {key:'duration',label:'Länge',chips:['15 Sek','30 Sek','60 Sek','3 Min','5+ Min']},
+    ]},
+    {id:'g2',title:'Story & Setting',icon:'ti-map',fields:[
+      {key:'setting',label:'Setting',chips:['Stadt','Natur','Innenraum','Futuristisch','Historisch','Wüste','Ozean','Weltraum']},
+      {key:'mood',label:'Stimmung',chips:['Spannend','Inspirierend','Melancholisch','Episch','Humorvoll','Mysteriös','Romantisch','Dunkel']},
+      {key:'message',label:'Kernbotschaft',chips:[],free:true,placeholder:'Was soll das Video vermitteln?'},
+      {key:'chars',label:'Charaktere',chips:[],free:true,placeholder:'z.B. ein älterer Mann, eine junge Frau...'},
+    ]},
+  ]},
+  image:{label:'Bild — Prompt',sections:[
+    {id:'i1',title:'Stil & Medium',icon:'ti-palette',fields:[
+      {key:'style',label:'Bildstil',chips:['Photorealistisch','Cinematic','Dark & Moody','Minimalist','Hyperrealistic','Illustrated','Concept Art','3D Render']},
+      {key:'ref',label:'Referenz-Stil',chips:['ARRI Alexa','Shot on 35mm','Hasselblad','Leica M','Studio Ghibli','Greg Rutkowski']},
+    ]},
+    {id:'i2',title:'Licht & Farbe',icon:'ti-sun',fields:[
+      {key:'light',label:'Licht',chips:['Golden Hour','Sonnenuntergang','Kerzenlicht','Neonlicht','Nebel','Studioblicht','Mondlicht','Overcast']},
+      {key:'color',label:'Farbpalette',chips:['Warm tones','Cool tones','Desaturated','High contrast','Pastel','Monochrome','Teal & Orange']},
+    ]},
+    {id:'i3',title:'Komposition & Kamera',icon:'ti-camera',fields:[
+      {key:'camera',label:'Einstellung',chips:['Close-up','Extreme Close-up','Wide Shot','Full Shot',"Bird's Eye",'Low Angle','Dutch Angle','Over the Shoulder']},
+      {key:'lens',label:'Objektiv',chips:['14mm','24mm','35mm','50mm','85mm','135mm','Fisheye']},
+      {key:'detail',label:'Details & Effekte',chips:['Film grain','Bokeh','Dust particles','Reflections','Lens flare','Motion blur','Chromatic aberration']},
+    ]},
+    {id:'i4',title:'Eigene Angaben',icon:'ti-pencil',fields:[
+      {key:'subject',label:'Hauptmotiv',chips:[],free:true,placeholder:'z.B. A lone samurai standing on a rooftop...'},
+      {key:'iextra',label:'Weitere Details',chips:[],free:true,placeholder:'Weitere Bilddetails...'},
+    ]},
+  ]},
+  video:{label:'Video — Prompt',sections:[
+    {id:'v1',title:'Bewegung & Kamerafahrt',icon:'ti-player-play',fields:[
+      {key:'movement',label:'Bewegung',chips:['Statisch','Leichte Bewegung','Dynamisch','Action','Slow Motion','Zeitraffer','Hyperlapse']},
+      {key:'camshot',label:'Kamerafahrt',chips:['Dolly in','Dolly out','Pan links','Pan rechts','Tracking Shot','Handheld','Crane Shot','360° Orbit']},
+    ]},
+    {id:'v2',title:'Tempo & Rhythmus',icon:'ti-activity',fields:[
+      {key:'tempo',label:'Tempo',chips:['Sehr langsam','Langsam','Normal','Schnell','Sehr schnell']},
+      {key:'cut',label:'Schnitt-Stil',chips:['Jump Cut','Slow crossfade','Hard cut','Match cut','Whip pan']},
+    ]},
+    {id:'v3',title:'Filmlook & Atmosphäre',icon:'ti-sparkles',fields:[
+      {key:'filmlook',label:'Filmlook',chips:['ARRI Alexa Look','IMAX Feeling','35mm Film','Cinematic Color Grading','Raw Documentary','Drone Aerial','Noir']},
+      {key:'vfx',label:'VFX / Effekte',chips:['Kein VFX','Leichter Rauch','Partikel','Regen','Schnee','Lichteffekte','Feuer','Nebel']},
+      {key:'audio',label:'Sound / Musik',chips:['Epischer Score','Ambient','Hip-Hop Beat','Stille','Diegetischer Sound','Voiceover']},
+    ]},
+    {id:'v4',title:'Eigene Angaben',icon:'ti-pencil',fields:[
+      {key:'vsubject',label:'Was passiert in der Szene',chips:[],free:true,placeholder:'z.B. Two figures walk through foggy streets at night...'},
+      {key:'vextra',label:'Weitere Details',chips:[],free:true,placeholder:'Weitere Video-Details...'},
+    ]},
+  ]}
+};
+
+const SK='vpb_hc1',AK='vpb_hc1_a',SVK='vpb_hc1_s';
+const ld=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))||d}catch{return d}};
+const sv=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+function newProj(n){
+  const s={},c={};
+  for(const ph of Object.keys(PHASES))for(const sec of PHASES[ph].sections)for(const f of sec.fields){s[f.key]=[];c[f.key]='';}
+  return{id:Date.now().toString(),name:n||'Projekt Name',sel:s,cust:c};
+}
+
+let projects=ld(SK,[]),activeId=ld(AK,null),saved=ld(SVK,[]),tab='idea',openS={};
+if(!projects.length){projects.push(newProj('Projekt Name'));sv(SK,projects)}
+if(!projects.find(p=>p.id===activeId))activeId=projects[0].id;
+
+const getP=()=>projects.find(p=>p.id===activeId)||projects[0];
+const saveAll=()=>{sv(SK,projects);sv(AK,activeId)};
+
+function switchProj(id){activeId=id;saveAll();renderAll()}
+function switchTab(t){tab=t;document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));document.getElementById('tab-'+t).classList.add('active');renderLeft();updatePreview()}
+function newProject(){const p=newProj();projects.push(p);activeId=p.id;saveAll();renderAll()}
+function delProject(){if(projects.length===1){alert('Mindestens ein Projekt muss vorhanden sein.');return}projects=projects.filter(p=>p.id!==activeId);activeId=projects[0].id;saveAll();renderAll()}
+function togSec(id){openS[id]=!openS[id];renderLeft()}
+function togChip(key,val){const p=getP();const a=p.sel[key];const i=a.indexOf(val);i>-1?a.splice(i,1):a.push(val);saveAll();renderChips(key);updatePreview()}
+function setCust(key,val){getP().cust[key]=val;saveAll();updatePreview()}
+
+function buildPrompt(t){
+  const p=getP(),pts=[];
+  for(const sec of PHASES[t].sections)for(const f of sec.fields){
+    const c=(p.sel[f.key]||[]).join(', ');
+    const x=(p.cust[f.key]||'').trim();
+    if(c)pts.push(c);if(x)pts.push(x);
+  }
+  return pts.join(', ');
+}
+
+function updatePreview(){
+  const txt=buildPrompt(tab);
+  const el=document.getElementById('previewText');
+  const lb=document.getElementById('variantLabel');
+  if(lb)lb.textContent=PHASES[tab].label;
+  if(!el)return;
+  el.innerHTML=txt?'<span>'+esc(txt)+'</span>':'<span class="pempty">Wähle Bausteine oder schreibe eigene Eingaben...</span>';
+}
+
+function generatePrompt(){
+  const txt=buildPrompt(tab);
+  const el=document.getElementById('previewText');
+  if(!txt){el.innerHTML='<span class="pempty">Keine Angaben — wähle erst Bausteine aus.</span>';return}
+  el.innerHTML='<span style="color:#93c5fd">'+esc(txt)+'</span>';
+}
+
+function copyPreview(){
+  const txt=buildPrompt(tab);if(!txt)return;
+  navigator.clipboard.writeText(txt).then(()=>{
+    const b=document.querySelector('.bact-p');const o=b.innerHTML;
+    b.innerHTML='<i class="ti ti-check"></i>Kopiert!';
+    setTimeout(()=>b.innerHTML=o,1800);
+  });
+}
+
+function savePromptLib(){
+  const txt=buildPrompt(tab);if(!txt)return;
+  saved.unshift({id:Date.now().toString(),label:PHASES[tab].label,proj:getP().name,text:txt});
+  if(saved.length>20)saved.length=20;
+  sv(SVK,saved);renderSaved();
+}
+
+function renderSaved(){
+  const el=document.getElementById('savedList');if(!el)return;
+  if(!saved.length){el.innerHTML='<div style="font-size:11px;color:#2a4060;font-style:italic">Noch keine gespeicherten Prompts.</div>';return}
+  el.innerHTML=saved.slice(0,5).map((s,i)=>`
+    <div class="sitem">
+      <div style="flex:1;min-width:0">
+        <div class="smeta">${esc(s.label)} · ${esc(s.proj)}</div>
+        <div class="stxt">${esc(s.text)}</div>
+      </div>
+      <span class="scopy" onclick="copySaved(${i})" title="Kopieren"><i class="ti ti-copy"></i></span>
+    </div>`).join('');
+}
+
+function copySaved(i){navigator.clipboard.writeText(saved[i].text)}
+
+function resetCurrent(){
+  const p=getP();
+  for(const sec of PHASES[tab].sections)for(const f of sec.fields){p.sel[f.key]=[];p.cust[f.key]='';}
+  saveAll();renderLeft();updatePreview();
+}
+
+function randomize(){
+  const p=getP();
+  for(const sec of PHASES[tab].sections)for(const f of sec.fields){
+    p.sel[f.key]=[];
+    if(f.chips&&f.chips.length)p.sel[f.key]=[f.chips[Math.floor(Math.random()*f.chips.length)]];
+  }
+  saveAll();renderLeft();updatePreview();
+}
+
+function renderChips(key){
+  const c=document.getElementById('chips-'+key);if(!c)return;
+  const p=getP();const ff=findField(key);if(!ff)return;
+  c.innerHTML=ff.chips.map(ch=>`<span class="chip ${(p.sel[key]||[]).includes(ch)?'sel':''}" onclick="togChip('${key}','${esc(ch)}')">${esc(ch)}</span>`).join('');
+}
+
+function findField(key){
+  for(const ph of Object.keys(PHASES))for(const sec of PHASES[ph].sections)for(const f of sec.fields)if(f.key===key)return f;
+  return null;
+}
+
+function renderLeft(){
+  const p=getP();let h='';
+  for(const sec of PHASES[tab].sections){
+    const op=openS[sec.id]!==false;
+    h+=`<div class="section">
+      <div class="sec-head" onclick="togSec('${sec.id}')">
+        <div class="sec-title"><i class="ti ${sec.icon}"></i>${esc(sec.title)}</div>
+        <i class="ti ti-chevron-down arrow ${op?'open':''}"></i>
+      </div>
+      <div class="sec-body ${op?'open':''}">`;
+    for(const f of sec.fields){
+      h+=`<div class="field-row"><div class="field-label">${esc(f.label)}</div>`;
+      if(f.chips&&f.chips.length)
+        h+=`<div class="chips" id="chips-${f.key}">${f.chips.map(ch=>`<span class="chip ${(p.sel[f.key]||[]).includes(ch)?'sel':''}" onclick="togChip('${f.key}','${esc(ch)}')">${esc(ch)}</span>`).join('')}</div>`;
+      h+=`<input class="finput" placeholder="${esc(f.placeholder||'Eigenes...')}" value="${esc(p.cust[f.key]||'')}" oninput="setCust('${f.key}',this.value)" aria-label="${esc(f.label)}">`;
+      h+=`</div>`;
+    }
+    h+=`</div></div>`;
+  }
+  document.getElementById('leftPanel').innerHTML=h;
+}
+
+function renderProj(){
+  const s=document.getElementById('projSelect');if(!s)return;
+  s.innerHTML=projects.map(p=>`<option value="${p.id}"${p.id===activeId?' selected':''}>${esc(p.name)}</option>`).join('');
+}
+
+function exportJSON(){
+  const a=document.createElement('a');
+  a.href='data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify({projects,saved},null,2));
+  a.download='workflow_video.json';a.click();
+}
+
+function importJSON(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    try{
+      const d=JSON.parse(ev.target.result);
+      if(d.projects){projects=d.projects;if(d.saved)saved=d.saved;}
+      else if(Array.isArray(d))projects=d;
+      else if(d.id){projects.push(d);activeId=d.id;}
+      if(!projects.find(p=>p.id===activeId))activeId=projects[0]?.id;
+      saveAll();sv(SVK,saved);renderAll();
+    }catch{alert('Ungültige JSON-Datei.')}
+  };
+  r.readAsText(f);e.target.value='';
+}
+
+function renderAll(){renderProj();renderLeft();updatePreview();renderSaved()}
+for(const ph of Object.keys(PHASES))for(const sec of PHASES[ph].sections)openS[sec.id]=true;
+renderAll();
+</script>
+</body>
+</html>
